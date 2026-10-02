@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flip the Coin</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="wrapper">
+    <!-- Heading -->
+    <h1 class="title">Flip the Coin</h1>
+    <p class="subtitle">Test your luck with a realistic 3D coin toss</p>
+
+    <!-- 3D Coin -->
+    <div class="coin-stage">
+      <div id="coin" class="coin pristine">
+        <!-- Heads face (front — rotateY 0) -->
+        <div class="face face-heads">
+          <div class="face-ring">
+            <span class="face-letter">H</span>
+            <span class="face-word">HEADS</span>
+          </div>
+        </div>
+        <!-- Tails face (back — rotateY 180deg) -->
+        <div class="face face-tails">
+          <div class="face-ring">
+            <span class="face-letter">T</span>
+            <span class="face-word">TAILS</span>
+          </div>
+        </div>
+        <!-- Edge -->
+        <div class="coin-edge"></div>
+      </div>
+    </div>
+
+    <!-- Button -->
+    <button id="flipBtn" class="flip-btn">FLIP COIN</button>
+
+    <!-- Result -->
+    <p id="result" class="result">Ready to flip?</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

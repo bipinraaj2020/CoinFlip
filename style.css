@@ -1,0 +1,308 @@
+/* ═══════════════════════════════════════════════════════
+   Flip the Coin — style.css
+   Minimal premium coin-toss experience
+   ═══════════════════════════════════════════════════════ */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold-light:  #ffe78f;
+  --gold:        #fbbf24;
+  --gold-mid:    #e5a813;
+  --gold-dark:   #b8860b;
+  --gold-deep:   #8a6508;
+  --purple-500:  #a855f7;
+  --purple-600:  #9333ea;
+  --violet-500:  #8b5cf6;
+  --accent-glow: rgba(147, 51, 234, 0.28);
+  --text-dark:   #1e1b4b;
+  --text-muted:  #6b6394;
+  --font:        'Inter', system-ui, -apple-system, sans-serif;
+  --font-display:'Outfit', system-ui, sans-serif;
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Background ─── */
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: linear-gradient(160deg, #ede5ff 0%, #e0e7ff 45%, #f0ebff 100%);
+  color: var(--text-dark);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Soft decorative blobs */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(110px);
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  width: 420px; height: 420px;
+  background: rgba(168, 85, 247, 0.10);
+  top: -100px; right: -60px;
+}
+body::after {
+  width: 340px; height: 340px;
+  background: rgba(96, 165, 250, 0.09);
+  bottom: -80px; left: -50px;
+}
+
+/* ─── Centered wrapper ─── */
+.wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+/* ═══════════════════ TYPOGRAPHY ═══════════════════ */
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  background: linear-gradient(135deg, var(--purple-600), #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.15;
+  margin-bottom: 0.35rem;
+}
+
+.subtitle {
+  font-size: clamp(0.92rem, 2.2vw, 1.08rem);
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 2.8rem;
+}
+
+/* ═══════════════════ 3D COIN ═══════════════════ */
+
+.coin-stage {
+  perspective: 1000px;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 2.2rem;
+}
+
+.coin {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+}
+
+/* ─── Faces ─── */
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 36% 30%, #ffe999, var(--gold) 42%, var(--gold-mid) 72%, var(--gold-dark) 100%);
+  border: 3.5px solid var(--gold-dark);
+  box-shadow:
+    inset 0 3px 14px rgba(255,255,255,0.35),
+    inset 0 -5px 16px rgba(0,0,0,0.18),
+    0 8px 30px rgba(180, 130, 20, 0.28);
+}
+
+/* Heads: front of the coin (default visible) */
+.face-heads {
+  transform: rotateY(0deg);
+}
+
+/* Tails: back of the coin */
+.face-tails {
+  transform: rotateY(180deg);
+}
+
+/* Pristine state: hide the H/T text so the coin looks plain on load */
+.coin.pristine .face-ring {
+  visibility: hidden;
+}
+
+.face-ring {
+  width: 68%;
+  height: 68%;
+  border-radius: 50%;
+  border: 2px solid rgba(146, 100, 10, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.face-letter {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 3.2rem;
+  line-height: 1;
+  color: var(--gold-deep);
+  text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+}
+
+.face-word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.55rem;
+  letter-spacing: 3.5px;
+  color: var(--gold-deep);
+  opacity: 0.55;
+}
+
+/* Edge for thickness */
+.coin-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--gold-mid), var(--gold-dark));
+  transform: translateZ(-3px);
+  box-shadow: 0 0 0 1.5px #a67508;
+  pointer-events: none;
+  backface-visibility: hidden;
+}
+
+/* ─── Flip Animations (rotateY axis) ─── */
+
+.coin.flip-heads {
+  animation: toHeads 1.5s var(--ease) forwards;
+}
+.coin.flip-tails {
+  animation: toTails 1.5s var(--ease) forwards;
+}
+
+/* Heads: land on 0° (mod 360) — full spins only */
+@keyframes toHeads {
+  0%   { transform: rotateY(0deg)    translateY(0);      }
+  12%  { transform: rotateY(240deg)  translateY(-90px);   }
+  32%  { transform: rotateY(720deg)  translateY(-135px);  }
+  58%  { transform: rotateY(1440deg) translateY(-55px);   }
+  78%  { transform: rotateY(1980deg) translateY(6px);     }
+  92%  { transform: rotateY(2120deg) translateY(-2px);    }
+  100% { transform: rotateY(2160deg) translateY(0);       } /* 360×6 = 0° mod 360 → heads */
+}
+
+/* Tails: land on 180° (mod 360) — full spins + half */
+@keyframes toTails {
+  0%   { transform: rotateY(0deg)    translateY(0);      }
+  12%  { transform: rotateY(240deg)  translateY(-90px);   }
+  32%  { transform: rotateY(720deg)  translateY(-135px);  }
+  58%  { transform: rotateY(1440deg) translateY(-55px);   }
+  78%  { transform: rotateY(2060deg) translateY(6px);     }
+  92%  { transform: rotateY(2300deg) translateY(-2px);    }
+  100% { transform: rotateY(2340deg) translateY(0);       } /* 360×6 + 180 = 180° mod 360 → tails */
+}
+
+/* ═══════════════════ BUTTON ═══════════════════ */
+
+.flip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.95rem 3rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.08rem;
+  letter-spacing: 2px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple-600), var(--violet-500));
+  border: none;
+  border-radius: 60px;
+  cursor: pointer;
+  box-shadow: 0 4px 24px var(--accent-glow);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.8rem;
+}
+
+/* Shimmer on hover */
+.flip-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.14) 50%, transparent 70%);
+  transform: translateX(-110%);
+  transition: transform 0.55s;
+  pointer-events: none;
+}
+.flip-btn:hover:not(:disabled)::after { transform: translateX(110%); }
+
+.flip-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 38px var(--accent-glow);
+}
+.flip-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+.flip-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ═══════════════════ RESULT TEXT ═══════════════════ */
+
+.result {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  min-height: 2rem;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+
+.result.heads { color: #d97706; }
+.result.tails { color: #6366f1; }
+
+.result.pop {
+  animation: resultPop 0.4s var(--ease);
+}
+
+@keyframes resultPop {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* ═══════════════════ REDUCED MOTION ═══════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════ RESPONSIVE ═══════════════════ */
+
+@media (max-width: 600px) {
+  .coin-stage { width: 150px; height: 150px; }
+  .face-letter { font-size: 2.6rem; }
+  .face-word { font-size: 0.48rem; letter-spacing: 2.5px; }
+  .flip-btn { padding: 0.85rem 2.4rem; font-size: 0.98rem; }
+  .result { font-size: 1.2rem; }
+  .subtitle { margin-bottom: 2rem; }
+}
+
+@media (max-width: 380px) {
+  .coin-stage { width: 130px; height: 130px; }
+  .face-letter { font-size: 2.2rem; }
+  .flip-btn { padding: 0.75rem 2rem; font-size: 0.9rem; letter-spacing: 1.5px; }
+}
